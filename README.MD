@@ -22,7 +22,7 @@ I feel annoyed with manually update my anime progress from another third-party a
 
 # Step 2 | Get JWT Credential from MAL OAuth2.0
 
-1. Open folder mal-oauth2
+1. Open folder `mal-oauth2`
 2. Open file `config.js`
 3. Put Your client ID on that config.CLIENT_ID
 4. type `cd mal-oauth2` in your terminal
@@ -45,11 +45,13 @@ I feel annoyed with manually update my anime progress from another third-party a
 
 1. Open file `callmyanimelist.lua`
 2. Put your access_token value into variable `malToken`
-3. It's basically already done.
+3. Copy file `callmyanimelist.lua`
+4. Paste the file to this path `%appdata%\mpv.net\scripts\`
+5. It's basically already done.
 
 # Step 4
 
 1. Open any video you like from my outputm3u folder.
 2. Then when video is loaded
 3. Hit `Ctrl+Shift+F`
-4. Check Your myanimelist is it already reflected or not.
+4. Check Your myanimelist to validate
