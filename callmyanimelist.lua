@@ -9,22 +9,24 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
     local mediaTitleSplit = delimiter(mediaTitleFull, "-")
     local mediaTitleTrimmed = string.gsub(mediaTitleSplit[1], "^%s*(.-)%s*$", "%1")
     local mediaTitleEncoded = string.gsub(mediaTitleTrimmed, " ", "+")
-    local currentStatus = setStatus(eps)
-
+    
     local getAnimeListRaw = utils.subprocess({
         args = {
             'curl',
             '-s',
             '-H',
             string.format('Authorization: Bearer %s', malToken),
-            string.format('https://api.myanimelist.net/v2/anime?q=%s&limit=1', mediaTitleEncoded)
+            string.format('https://api.myanimelist.net/v2/anime?q=%s&limit=1&fields=num_episodes', mediaTitleEncoded)
         }
     })
-
+    
     local getAnimeListJSON = utils.parse_json(getAnimeListRaw.stdout)
-
+    
     local animeID = getAnimeListJSON.data[1].node.id
     local title = getAnimeListJSON.data[1].node.title
+    local lastEps = getAnimeListJSON.data[1].node.num_episodes
+
+    local currentStatus = setStatus(eps, lastEps)
 
     local postAnimeByID = utils.subprocess({
         args = {
@@ -47,9 +49,11 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
     msg.info(utils.format_json(postAnimeByID))
 end)
 
-function setStatus(eps) 
+function setStatus(eps, lastEps) 
     if eps == 1 then
         return "watching"
+    elseif eps == lastEps then
+        return "completed"
     else 
         return "watching"
     end
