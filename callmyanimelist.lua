@@ -50,6 +50,8 @@ end)
 function setStatus(eps) 
     if eps == 1 then
         return "watching"
+    else 
+        return "watching"
     end
 end
 
