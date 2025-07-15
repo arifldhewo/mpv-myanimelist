@@ -9,6 +9,7 @@ I feel annoyed with manually update my anime progress from another third-party a
 # Step 0 | Clone this repository
 
 1. git clone https://github.com/arifldhewo/mpv-myanimelist.git
+2. install node.js if you're not have it https://nodejs.org/en/download
 
 # Step 1 | Create API license in order to get ClientID
 
