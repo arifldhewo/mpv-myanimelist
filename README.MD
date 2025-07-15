@@ -23,12 +23,13 @@ I feel annoyed with manually update my anime progress from another third-party a
 # Step 2 | Get JWT Credential from MAL OAuth2.0
 
 1. Open folder `mal-oauth2`
-2. Open file `config.js`
-3. Put Your client ID on that config.CLIENT_ID
-4. type `cd mal-oauth2` in your terminal
-5. type `node server.js` in your terminal
-6. open your browser and type `localhost:3000`
-7. click Authorize and will return a data something like below
+2. type `npm install` in your terminal
+3. Open file `config.js`
+4. Put Your client ID on that config.CLIENT_ID
+5. type `cd mal-oauth2` in your terminal
+6. type `node server.js` in your terminal
+7. open your browser and type `localhost:3000`
+8. click Authorize and will return a data something like below
 
 ```json
 {
