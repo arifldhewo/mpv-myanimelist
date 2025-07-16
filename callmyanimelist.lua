@@ -1,14 +1,18 @@
 local msg = require 'mp.msg'
 local utils = require 'mp.utils'
+local malToken = "PUT YOUR TOKEN HERE"
 
 mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
     local mediaTitleFull = mp.get_property("media-title")
-    malToken = "PUT YOUR TOKEN HERE"
+    local mediaFileName = mp.get_property("playlist-path")
     local mediaTitleFullLen = string.len(mediaTitleFull)
     local eps = tonumber(string.sub(mediaTitleFull, mediaTitleFullLen - 1, mediaTitleFullLen))
-    local mediaTitleSplit = delimiter(mediaTitleFull, "-")
-    local mediaTitleTrimmed = string.gsub(mediaTitleSplit[1], "^%s*(.-)%s*$", "%1")
-    local mediaTitleEncoded = string.gsub(mediaTitleTrimmed, " ", "+")
+    local mediaFileNameSplit = delimiter(mediaFileName, "\\")
+    local mediaFileNameSplitLen = #mediaFileNameSplit
+    local mediaFileNameSplitLast = mediaFileNameSplit[mediaFileNameSplitLen]
+    local getSlugTitle = delimiter(mediaFileNameSplitLast, ".")
+    local mediaTitleEncoded = string.gsub(getSlugTitle[1],"-", "+")
+    local mediaTitleEncoded64 = string.sub(mediaTitleEncoded, 1, 64)
     
     local getAnimeListRaw = utils.subprocess({
         args = {
@@ -16,7 +20,7 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
             '-s',
             '-H',
             string.format('Authorization: Bearer %s', malToken),
-            string.format('https://api.myanimelist.net/v2/anime?q=%s&limit=1&fields=num_episodes', mediaTitleEncoded)
+            string.format('https://api.myanimelist.net/v2/anime?q=%s&limit=1&fields=num_episodes', mediaTitleEncoded64)
         }
     })
     
@@ -50,9 +54,7 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
 end)
 
 function setStatus(eps, lastEps) 
-    if eps == 1 then
-        return "watching"
-    elseif eps == lastEps then
+    if eps == lastEps then
         return "completed"
     else 
         return "watching"
