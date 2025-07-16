@@ -4,7 +4,7 @@ I feel annoyed with manually update my anime progress from another third-party a
 
 # Pre-requisite
 
-#### `Currently only support update if you're using my anime-scrape repo: [anime-scrape](https://github.com/arifldhewo/anime-scrape)`
+### Currently only support update if you're using my anime-scrape repo: [anime-scrape](https://github.com/arifldhewo/anime-scrape)
 
 # Step 0 | Clone this repository
 
@@ -33,10 +33,10 @@ I feel annoyed with manually update my anime progress from another third-party a
 
 ```json
 {
-	"token_type": "Bearer",
-	"expires_in": 2678400,
-	"access_token": "a1b2c3d4e5...",
-	"refresh_token": "z9y8x7w6u5..."
+    "token_type": "Bearer",
+    "expires_in": 2678400,
+    "access_token": "a1b2c3d4e5...",
+    "refresh_token": "z9y8x7w6u5..."
 }
 ```
 
