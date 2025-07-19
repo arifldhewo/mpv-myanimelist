@@ -1,6 +1,10 @@
+local mp = require 'mp'
 local msg = require 'mp.msg'
 local utils = require 'mp.utils'
-local malToken = "PUT YOUR TOKEN HERE"
+local versionCheckerBaseURL = "https://version.arifldhewo.my.id"
+local malBaseURL = "https://api.myanimelist.net/v2"
+local malToken = "PUT YOUR TOKEN HERE" 
+local currentVersion = "1.3.0"
 
 mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
     local mediaTitleFull = mp.get_property("media-title")
@@ -13,18 +17,25 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
     local getSlugTitle = delimiter(mediaFileNameSplitLast, ".")
     local mediaTitleEncoded = string.gsub(getSlugTitle[1],"-", "+")
     local mediaTitleEncoded64 = string.sub(mediaTitleEncoded, 1, 64)
-    
+
     local getAnimeListRaw = utils.subprocess({
         args = {
             'curl',
             '-s',
             '-H',
             string.format('Authorization: Bearer %s', malToken),
-            string.format('https://api.myanimelist.net/v2/anime?q=%s&limit=1&fields=num_episodes', mediaTitleEncoded64)
-        }
+            string.format('%s/anime?q=%s&limit=1&fields=num_episodes', malBaseURL, mediaTitleEncoded64)
+        },
+        cancellable = false
     })
     
     local getAnimeListJSON = utils.parse_json(getAnimeListRaw.stdout)
+
+    if getAnimeListJSON.error then
+        mp.osd_message("Error is occured when getAnimeList (Check Console for Details press [`] tilde)", 5)
+        msg.warn(getAnimeListRaw.stdout)
+        return
+    end
     
     local animeID = getAnimeListJSON.data[1].node.id
     local title = getAnimeListJSON.data[1].node.title
@@ -35,7 +46,7 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
     local postAnimeByID = utils.subprocess({
         args = {
             'curl',
-            string.format('https://api.myanimelist.net/v2/anime/%s/my_list_status', animeID),
+            string.format('%s/anime/%s/my_list_status', malBaseURL, animeID),
             '-s',
             '-H',
             string.format('Authorization: Bearer %s', malToken),
@@ -45,13 +56,35 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
             'PUT',
             '-d',
             string.format('status=%s', currentStatus),
-            '-d',
+            '-d', 
             string.format('num_watched_episodes=%s', eps)
-        }
+        },
+        cancellable = false
     })
 
-    msg.info(utils.format_json(postAnimeByID))
+    mp.osd_message(string.format("Success update%s to MAL", mediaTitleFull), 2.5)
 end)
+
+mp.register_event("file-loaded", function () 
+    local getNewestVersionRaw = utils.subprocess({
+        args = {
+            'curl', 
+            '-s',
+            string.format("%s/version/callmyanimelist", versionCheckerBaseURL),
+        },
+        cancellable = false,
+    })
+
+    local formatJSON = utils.parse_json(getNewestVersionRaw.stdout)
+
+    if formatJSON.tag_name ~= currentVersion then 
+        mp.osd_message(string.format("Hey, There's a new version [%s] current [%s]", formatJSON.tag_name, currentVersion))
+    else
+        msg.info("Version is up to date")
+    end
+end)
+
+------------------------------------------------------------------------------------------- A LINE BETWEEN HELPER AND ACTION
 
 function setStatus(eps, lastEps) 
     if eps == lastEps then
