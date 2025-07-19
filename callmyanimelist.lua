@@ -5,8 +5,58 @@ local versionCheckerBaseURL = "https://version.arifldhewo.my.id"
 local malBaseURL = "https://api.myanimelist.net/v2"
 local malToken = "PUT YOUR TOKEN HERE" 
 local currentVersion = "1.3.0"
+local isTrigger = false
 
 mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
+    updateMAL()
+end)
+
+mp.observe_property("percent-pos", "number", function(property, value) 
+    if value then
+        local durationPercentFloor = math.floor(value)
+        if (durationPercentFloor >= 80 and isTrigger == false) then
+            isTrigger = true
+            updateMAL()
+        end
+    else
+        msg.warn("Duration Not Appears Yet")
+    end
+end)
+
+mp.observe_property("playlist-current-pos", "string", function (property, value) 
+    if value then
+        isTrigger = false
+    else 
+        msg.error("Unknown Position RN")
+    end
+end)
+
+mp.register_event("file-loaded", function () 
+    versionChecker()
+end)
+
+------------------------------------------------------------------------------------------- A LINE BETWEEN HELPER AND ACTION
+
+function versionChecker() 
+    local getNewestVersionRaw = utils.subprocess({
+        args = {
+            'curl', 
+            '-s',
+            string.format("%s/version/callmyanimelist", versionCheckerBaseURL),
+        },
+        cancellable = false,
+    })
+
+    local formatJSON = utils.parse_json(getNewestVersionRaw.stdout)
+
+    if formatJSON.tag_name ~= currentVersion then 
+        mp.osd_message(string.format("Hey, There's a new version [%s] current [%s]", formatJSON.tag_name, currentVersion))
+    else
+        msg.info("Version is up to date")
+    end
+end
+
+function updateMAL() 
     local mediaTitleFull = mp.get_property("media-title")
     local mediaFileName = mp.get_property("playlist-path")
     local mediaTitleFullLen = string.len(mediaTitleFull)
@@ -63,28 +113,7 @@ mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
     })
 
     mp.osd_message(string.format("Success update%s to MAL", mediaTitleFull), 2.5)
-end)
-
-mp.register_event("file-loaded", function () 
-    local getNewestVersionRaw = utils.subprocess({
-        args = {
-            'curl', 
-            '-s',
-            string.format("%s/version/callmyanimelist", versionCheckerBaseURL),
-        },
-        cancellable = false,
-    })
-
-    local formatJSON = utils.parse_json(getNewestVersionRaw.stdout)
-
-    if formatJSON.tag_name ~= currentVersion then 
-        mp.osd_message(string.format("Hey, There's a new version [%s] current [%s]", formatJSON.tag_name, currentVersion))
-    else
-        msg.info("Version is up to date")
-    end
-end)
-
-------------------------------------------------------------------------------------------- A LINE BETWEEN HELPER AND ACTION
+end
 
 function setStatus(eps, lastEps) 
     if eps == lastEps then
