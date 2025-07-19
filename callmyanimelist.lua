@@ -4,7 +4,7 @@ local utils = require 'mp.utils'
 local versionCheckerBaseURL = "https://version.arifldhewo.my.id"
 local malBaseURL = "https://api.myanimelist.net/v2"
 local malToken = "PUT YOUR TOKEN HERE" 
-local currentVersion = "1.3.0"
+local currentVersion = "1.4.0"
 local isTrigger = false
 
 mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
