@@ -4,7 +4,7 @@ local utils = require 'mp.utils'
 local versionCheckerBaseURL = "https://version.arifldhewo.my.id"
 local malBaseURL = "https://api.myanimelist.net/v2"
 local malToken = "PUT YOUR TOKEN HERE" 
-local currentVersion = "1.5.0"
+local currentVersion = "1.5.1"
 local isTrigger = false
 
 mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
@@ -86,9 +86,14 @@ function lastWatched()
 
     local index = findFirstIndex(getMyAnimeListJSON.data, trimMediaTitleName)
 
-    local numWatchedEpisode = getMyAnimeListJSON.data[index].list_status.num_episodes_watched
+    if (index ~= nil) then
+        local numWatchedEpisode = getMyAnimeListJSON.data[index].list_status.num_episodes_watched
+    
+        mp.osd_message(string.format("Last watched on episode: %d", numWatchedEpisode), 5)
+    else 
+        mp.osd_message("Not Watched Yet")
+    end
 
-    mp.osd_message(string.format("Last watched on episode: %d", numWatchedEpisode), 5)
 end
 
 function updateMAL() 
