@@ -4,7 +4,7 @@ local utils = require 'mp.utils'
 local versionCheckerBaseURL = "https://version.arifldhewo.my.id"
 local malBaseURL = "https://api.myanimelist.net/v2"
 local malToken = "PUT YOUR TOKEN HERE" 
-local currentVersion = "1.5.3"
+local currentVersion = "1.5.4"
 local isTrigger = false
 
 mp.add_key_binding("Ctrl+Shift+f", "update-anime", function ()
@@ -64,8 +64,13 @@ function lastWatched()
     local playingVideoIndex = mp.get_property("playlist-pos")
     local mediaTitleName = mp.get_property(string.format("playlist/%s/title", playingVideoIndex))
     local splitMediaTitleName = delimiter(mediaTitleName, "-")
-    local trimMediaTitleName = trim(splitMediaTitleName[1])
 
+    if(#splitMediaTitleName == 1) then
+        splitMediaTitleName = delimiter(mediaTitleName, "|")
+    end
+
+    local trimMediaTitleName = trim(splitMediaTitleName[1])
+    
     local getMyAnimeListRaw = utils.subprocess({
         args = {
             'curl',
