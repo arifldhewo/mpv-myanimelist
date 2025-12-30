@@ -1,6 +1,6 @@
 # Problem Statement
 
-I feel annoyed with manually update my anime progress from another third-party apps. So I build this plugin instead. This the first step as able to manually trigger by hotkeys. In the future I want to build it with automatically update at certain percentage of video duration.
+I feel annoyed with manually update my anime progress from another third-party apps. So I build this plugin instead. ~~is the first step as able to manually trigger by hotkeys. In the future I want to build it with automatically update at certain percentage of video duration.~~ **Update by video percentage is already implemented, when it's reaching 80% of video duration, it would update the progress to your myanimelist account**
 
 # Pre-requisite
 
